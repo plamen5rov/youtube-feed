@@ -186,10 +186,10 @@ MIT License - feel free to use this project for learning or personal projects.
 
 ## Star History
 
-<a href="https://www.star-history.com/?repos=plamen5rov%2Fyoutube-feed&type=date&legend=top-left">
+<a href="https://www.star-history.com/?repos=plamen5rov%2Fyoutube-feed&type=timeline&logscale=&legend=top-left">
  <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/image?repos=plamen5rov/youtube-feed&type=date&theme=dark&legend=top-left" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/image?repos=plamen5rov%2Fyoutube-feed&type=date&legend=top-left" />
-   <img alt="Star History Chart" src="https://api.star-history.com/image?repos=plamen5rov/youtube-feed&type=date&legend=top-left" />
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/image?repos=plamen5rov/youtube-feed&type=timeline&theme=dark&logscale&legend=top-left" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/image?repos=plamen5rov/youtube-feed&type=timeline&logscale&legend=top-left" />
+   <img alt="Star History Chart" src="https://api.star-history.com/image?repos=plamen5rov/youtube-feed&type=timeline&logscale&legend=top-left" />
  </picture>
 </a>
