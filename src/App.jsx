@@ -221,53 +221,83 @@ function AppContent() {
     if (videoResults.length === 0) return
 
     const topic = sessionStorage.getItem('lastTopic') || 'Videos'
+    const date = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
     
     const pdfContent = document.createElement('div')
-    pdfContent.style.padding = '20px'
+    pdfContent.style.padding = '40px'
     pdfContent.style.fontFamily = '-apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif'
-    pdfContent.style.color = '#1d1d1f'
+    pdfContent.style.color = '#1a1a1a'
     pdfContent.style.backgroundColor = '#ffffff'
+    pdfContent.style.minHeight = '297mm'
     
     let html = `
-      <h1 style="font-size: 24px; margin-bottom: 8px; color: #ff2d55;">YouTube Feed</h1>
-      <h2 style="font-size: 18px; margin-bottom: 16px; color: #1d1d1f;">Topic: ${topic}</h2>
-      <p style="font-size: 14px; color: #86868b; margin-bottom: 20px;">Found ${videoResults.length} videos from your subscriptions</p>
-      <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
-        <thead>
-          <tr style="background-color: #f5f5f7;">
-            <th style="padding: 12px; text-align: left; border-bottom: 2px solid #d2d2d7;">Video</th>
-            <th style="padding: 12px; text-align: left; border-bottom: 2px solid #d2d2d7;">Channel</th>
-            <th style="padding: 12px; text-align: left; border-bottom: 2px solid #d2d2d7;">Date</th>
-            <th style="padding: 12px; text-align: left; border-bottom: 2px solid #d2d2d7;">Duration</th>
-          </tr>
-        </thead>
-        <tbody>
+      <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 3px solid #ff0000;">
+        <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="white">
+            <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+          </svg>
+        </div>
+        <div>
+          <h1 style="font-size: 28px; font-weight: 700; margin: 0; color: #1a1a1a; letter-spacing: -0.5px;">YouTube Feed</h1>
+          <p style="font-size: 12px; color: #86868b; margin: 4px 0 0;">Generated on ${date}</p>
+        </div>
+      </div>
+      
+      <div style="background: linear-gradient(135deg, #fff5f5 0%, #fff0f0 100%); padding: 24px; border-radius: 16px; margin-bottom: 32px; border-left: 4px solid #ff0000;">
+        <h2 style="font-size: 20px; font-weight: 600; margin: 0 0 8px; color: #1a1a1a;">Topic: ${topic}</h2>
+        <p style="font-size: 14px; color: #666; margin: 0;">Found <strong style="color: #ff0000;">${videoResults.length} videos</strong> from your subscriptions</p>
+      </div>
+      
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 32px;">
+        <div style="background: #f8f8f8; padding: 16px; border-radius: 12px; text-align: center;">
+          <div style="font-size: 28px; font-weight: 700; color: #ff0000;">${videoResults.length}</div>
+          <div style="font-size: 12px; color: #86868b; text-transform: uppercase; letter-spacing: 1px;">Videos</div>
+        </div>
+        <div style="background: #f8f8f8; padding: 16px; border-radius: 12px; text-align: center;">
+          <div style="font-size: 28px; font-weight: 700; color: #ff0000;">${new Set(videoResults.map(v => v.channelTitle)).size}</div>
+          <div style="font-size: 12px; color: #86868b; text-transform: uppercase; letter-spacing: 1px;">Channels</div>
+        </div>
+      </div>
+      
+      <h3 style="font-size: 16px; font-weight: 600; margin: 0 0 16px; color: #1a1a1a; padding-bottom: 12px; border-bottom: 2px solid #eee;">Video Results</h3>
     `
 
-    videoResults.forEach(video => {
-      const title = video.title.length > 50 ? video.title.substring(0, 50) + '...' : video.title
+    videoResults.forEach((video, index) => {
+      const title = video.title.length > 60 ? video.title.substring(0, 60) + '...' : video.title
       const duration = formatDuration(video.duration) || '-'
-      const date = new Date(video.publishedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+      const videoDate = new Date(video.publishedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+      const desc = video.description ? video.description.substring(0, 80).replace(/<[^>]*>/g, '') + '...' : 'No description'
+      
       html += `
-        <tr>
-          <td style="padding: 12px; border-bottom: 1px solid #e5e5e5;">
-            <a href="https://youtube.com/watch?v=${video.id}" style="color: #0a84ff; text-decoration: none;">${title}</a>
-          </td>
-          <td style="padding: 12px; border-bottom: 1px solid #e5e5e5;">${video.channelTitle}</td>
-          <td style="padding: 12px; border-bottom: 1px solid #e5e5e5;">${date}</td>
-          <td style="padding: 12px; border-bottom: 1px solid #e5e5e5;">${duration}</td>
-        </tr>
+        <div style="display: flex; gap: 16px; padding: 16px; background: ${index % 2 === 0 ? '#fff' : '#fafafa'}; border-radius: 12px; margin-bottom: 12px; border: 1px solid #eee;">
+          <div style="width: 120px; height: 68px; background: #f0f0f0; border-radius: 8px; overflow: hidden; flex-shrink: 0;">
+            <img src="${video.thumbnail}" style="width: 100%; height: 100%; object-fit: cover;" />
+          </div>
+          <div style="flex: 1; min-width: 0;">
+            <a href="https://youtube.com/watch?v=${video.id}" style="font-size: 14px; font-weight: 600; color: #1a1a1a; text-decoration: none; display: block; margin-bottom: 6px; line-height: 1.3;">${title}</a>
+            <div style="font-size: 12px; color: #ff0000; font-weight: 500; margin-bottom: 4px;">${video.channelTitle}</div>
+            <div style="font-size: 11px; color: #888;">
+              <span style="margin-right: 12px;">📅 ${videoDate}</span>
+              <span>⏱ ${duration}</span>
+            </div>
+          </div>
+        </div>
       `
     })
 
-    html += '</tbody></table>'
+    html += `
+      <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; text-align: center;">
+        <p style="font-size: 11px; color: #aaa; margin: 0;">Generated by YouTube Feed • youtube-feed.github.io</p>
+      </div>
+    `
+    
     pdfContent.innerHTML = html
 
     const opt = {
-      margin: 10,
-      filename: `youtube-report-${topic.toLowerCase().replace(/\s+/g, '-')}.pdf`,
+      margin: [5, 5, 5, 5],
+      filename: `youtube-feed-${topic.toLowerCase().replace(/\s+/g, '-')}.pdf`,
       image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2 },
+      html2canvas: { scale: 2, useCORS: true },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     }
 

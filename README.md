@@ -6,6 +6,8 @@ A modern web application that helps you find videos from your YouTube subscripti
 ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
 ![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)
 
+![YouTube Feed Screenshot](public/screenshot.png)
+
 ## Features
 
 - 🔐 **Google OAuth Authentication** - Secure sign-in with your Google account
