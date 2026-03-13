@@ -193,4 +193,3 @@ MIT License - feel free to use this project for learning or personal projects.
    <img alt="Star History Chart" src="https://api.star-history.com/image?repos=plamen5rov/youtube-feed&type=date&legend=top-left" />
  </picture>
 </a>
-- [Vite](https://vitejs.dev)
