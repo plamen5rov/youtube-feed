@@ -16,6 +16,9 @@ A modern web application that helps you find videos from your YouTube subscripti
 - 📅 **Date Filtering** - Filter videos by date range
 - 📋 **Markdown Export** - Copy results as a formatted Markdown table
 - 📄 **PDF Export** - Download a professional PDF report
+
+![PDF Export](public/pdf.png)
+
 - 🎨 **Modern UI** - Dark theme with YouTube-inspired red accents
 - 📱 **Responsive** - Works on desktop and mobile devices
 
