@@ -6,6 +6,11 @@ A modern web application that helps you find videos from your YouTube subscripti
 ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
 ![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)
 
+[![Star on GitHub](https://img.shields.io/github/stars/plamen5rov/youtube-feed?style=social)](https://github.com/plamen5rov/youtube-feed)
+[![Fork on GitHub](https://img.shields.io/github/forks/plamen5rov/youtube-feed?style=social)](https://github.com/plamen5rov/youtube-feed)
+[![GitHub stars](https://img.shields.io/github/stars/plamen5rov/youtube-feed?style=flat-square)](https://github.com/plamen5rov/youtube-feed/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/plamen5rov/youtube-feed?style=flat-square)](https://github.com/plamen5rov/youtube-feed/network)
+
 ![YouTube Feed Screenshot](public/screenshot.png)
 
 ## Features
@@ -155,6 +160,18 @@ Add your email as a test user in Google Cloud Console:
 ### Blank Screen After Login
 - Check browser console for errors
 - Ensure JavaScript origins are configured correctly
+
+## Support the Project
+
+If you find this project useful, please consider:
+
+- ⭐ **Star the repo** on [GitHub](https://github.com/plamen5rov/youtube-feed)
+- 🐛 **Report issues** at https://github.com/plamen5rov/youtube-feed/issues
+- 💡 **Suggest features** or improvements
+
+Your support motivates me to keep building!
+
+---
 
 ## License
 
