@@ -183,3 +183,14 @@ MIT License - feel free to use this project for learning or personal projects.
 - [Google Identity Services](https://developers.google.com/identity)
 - [React](https://react.dev)
 - [Vite](https://vitejs.dev)
+
+## Star History
+
+<a href="https://www.star-history.com/?repos=plamen5rov%2Fyoutube-feed&type=date&legend=top-left">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/image?repos=plamen5rov/youtube-feed&type=date&theme=dark&legend=top-left" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/image?repos=plamen5rov%2Fyoutube-feed&type=date&legend=top-left" />
+   <img alt="Star History Chart" src="https://api.star-history.com/image?repos=plamen5rov/youtube-feed&type=date&legend=top-left" />
+ </picture>
+</a>
+- [Vite](https://vitejs.dev)
