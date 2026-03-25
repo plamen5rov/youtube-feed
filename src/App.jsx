@@ -1,10 +1,12 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { GoogleOAuthProvider, useGoogleLogin } from '@react-oauth/google'
 import Header from './components/Header'
 import SearchPanel from './components/SearchPanel'
 import VideoGrid from './components/VideoGrid'
 import ExportButtons from './components/ExportButtons'
+import ErrorBoundary from './components/ErrorBoundary'
 import html2pdf from 'html2pdf.js'
+import { formatDuration, getDurationSeconds } from './utils'
 import './App.css'
 
 const CLIENT_ID = import.meta.env.VITE_YOUTUBE_CLIENT_ID
@@ -18,6 +20,48 @@ function AppContent() {
   const [isLoading, setIsLoading] = useState(false)
   const [statusMessage, setStatusMessage] = useState('')
   const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [sortBy, setSortBy] = useState('date')
+  const [sortOrder, setSortOrder] = useState('desc')
+  const [channelFilter, setChannelFilter] = useState(new Set())
+  const [lastSearch, setLastSearch] = useState(null)
+  const [searchHistory, setSearchHistory] = useState(() => {
+    try {
+      return JSON.parse(sessionStorage.getItem('search_history') || '[]')
+    } catch { return [] }
+  })
+
+  const channels = useMemo(() => {
+    const map = new Map()
+    videoResults.forEach(v => {
+      if (!map.has(v.channelId)) map.set(v.channelId, v.channelTitle)
+    })
+    return Array.from(map, ([id, title]) => ({ id, title })).sort((a, b) => a.title.localeCompare(b.title))
+  }, [videoResults])
+
+  const filteredResults = useMemo(() => {
+    let results = videoResults
+    if (channelFilter.size > 0) {
+      results = results.filter(v => channelFilter.has(v.channelId))
+    }
+    const dir = sortOrder === 'asc' ? 1 : -1
+    results = [...results].sort((a, b) => {
+      if (sortBy === 'date') return dir * (new Date(a.publishedAt) - new Date(b.publishedAt))
+      if (sortBy === 'channel') return dir * a.channelTitle.localeCompare(b.channelTitle)
+      if (sortBy === 'duration') return dir * (getDurationSeconds(a.duration) - getDurationSeconds(b.duration))
+      return 0
+    })
+    return results
+  }, [videoResults, sortBy, sortOrder, channelFilter])
+
+  const addToHistory = useCallback((params) => {
+    setSearchHistory(prev => {
+      const entry = { ...params, timestamp: Date.now() }
+      const filtered = prev.filter(h => h.topic !== params.topic || h.scope !== params.scope)
+      const next = [entry, ...filtered].slice(0, 10)
+      sessionStorage.setItem('search_history', JSON.stringify(next))
+      return next
+    })
+  }, [])
 
   useEffect(() => {
     const storedToken = sessionStorage.getItem('yt_access_token')
@@ -106,6 +150,9 @@ function AppContent() {
     setIsLoading(true)
     setStatusMessage('Searching videos...')
     setVideoResults([])
+    setChannelFilter(new Set())
+    setLastSearch({ topic, fromDate, toDate, scope })
+    addToHistory({ topic, fromDate, toDate, scope })
 
     let allResults = []
     let pageToken = null
@@ -302,6 +349,7 @@ function AppContent() {
               <span style="margin-right: 12px;">📅 ${videoDate}</span>
               <span>⏱ ${duration}</span>
             </div>
+            <div style="font-size: 11px; color: #666; margin-top: 6px; line-height: 1.4;">${desc}</div>
           </div>
         </div>
       `
@@ -329,43 +377,77 @@ function AppContent() {
     })
   }
 
-  const formatDuration = (isoDuration) => {
-    if (!isoDuration) return null
-    const match = isoDuration.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/)
-    if (!match) return null
-    const hours = parseInt(match[1]) || 0
-    const minutes = parseInt(match[2]) || 0
-    const seconds = parseInt(match[3]) || 0
-    if (hours > 0) return `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`
-  }
-
   return (
     <div className="app">
       <Header 
         isAuthenticated={isAuthenticated} 
         onLogout={handleLogout}
-        onLogin={handleLogin}
       />
       
       {isAuthenticated && (
-        <>
+        <ErrorBoundary>
           <SearchPanel 
             onSearch={handleSearch}
             isLoading={isLoading}
             statusMessage={statusMessage}
+            searchHistory={searchHistory}
           />
           
           {videoResults.length > 0 && (
-            <ExportButtons 
-              onCopyMarkdown={handleCopyMarkdown}
-              onExportPDF={handleExportPDF}
-              count={videoResults.length}
-            />
+            <>
+              <ExportButtons 
+                onCopyMarkdown={handleCopyMarkdown}
+                onExportPDF={handleExportPDF}
+                count={filteredResults.length}
+                totalCount={videoResults.length}
+                lastSearch={lastSearch}
+                sortBy={sortBy}
+                sortOrder={sortOrder}
+                onSortChange={(field) => {
+                  if (sortBy === field) {
+                    setSortOrder(o => o === 'desc' ? 'asc' : 'desc')
+                  } else {
+                    setSortBy(field)
+                    setSortOrder('desc')
+                  }
+                }}
+              />
+              
+              {channels.length > 1 && (
+                <div className="channel-filter">
+                  <span className="channel-filter-label">Channels:</span>
+                  <button
+                    className={`channel-chip${channelFilter.size === 0 ? ' active' : ''}`}
+                    onClick={() => setChannelFilter(new Set())}
+                  >
+                    All ({videoResults.length})
+                  </button>
+                  {channels.map(ch => (
+                    <button
+                      key={ch.id}
+                      className={`channel-chip${channelFilter.has(ch.id) ? ' active' : ''}`}
+                      onClick={() => {
+                        setChannelFilter(prev => {
+                          const next = new Set(prev)
+                          if (next.has(ch.id)) {
+                            next.delete(ch.id)
+                          } else {
+                            next.add(ch.id)
+                          }
+                          return next
+                        })
+                      }}
+                    >
+                      {ch.title}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </>
           )}
           
-          <VideoGrid videos={videoResults} />
-        </>
+          <VideoGrid videos={filteredResults} />
+        </ErrorBoundary>
       )}
       
       {!isAuthenticated && (

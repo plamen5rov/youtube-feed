@@ -1,24 +1,6 @@
+import { formatDuration, formatDate } from '../utils'
+
 function VideoCard({ video }) {
-  const formatDuration = (isoDuration) => {
-    if (!isoDuration) return null
-    const match = isoDuration.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/)
-    if (!match) return null
-    const hours = parseInt(match[1]) || 0
-    const minutes = parseInt(match[2]) || 0
-    const seconds = parseInt(match[3]) || 0
-    if (hours > 0) return `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`
-  }
-
-  const formatDate = (dateString) => {
-    const date = new Date(dateString)
-    return date.toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'short', 
-      day: 'numeric' 
-    })
-  }
-
   const duration = formatDuration(video.duration)
   const date = formatDate(video.publishedAt)
 

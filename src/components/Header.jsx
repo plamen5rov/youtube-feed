@@ -1,4 +1,4 @@
-function Header({ isAuthenticated, onLogout, onLogin }) {
+function Header({ isAuthenticated, onLogout }) {
   return (
     <header className="header">
       <div className="header-left">

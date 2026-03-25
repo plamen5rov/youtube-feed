@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import DatePicker from './DatePicker'
 
-function SearchPanel({ onSearch, isLoading, statusMessage }) {
+function SearchPanel({ onSearch, isLoading, statusMessage, searchHistory }) {
   const today = new Date()
   const defaultFrom = new Date(today)
   defaultFrom.setDate(today.getDate() - 60)
@@ -15,6 +15,16 @@ function SearchPanel({ onSearch, isLoading, statusMessage }) {
     e.preventDefault()
     if (topic.trim() && !isLoading) {
       onSearch({ topic, fromDate, toDate, scope })
+    }
+  }
+
+  const handleHistoryClick = (entry) => {
+    setTopic(entry.topic)
+    setFromDate(entry.fromDate)
+    setToDate(entry.toDate)
+    setScope(entry.scope)
+    if (!isLoading) {
+      onSearch(entry)
     }
   }
 
@@ -85,6 +95,22 @@ function SearchPanel({ onSearch, isLoading, statusMessage }) {
           </button>
         </div>
       </form>
+
+      {searchHistory && searchHistory.length > 0 && (
+        <div className="search-history">
+          <span className="search-history-label">Recent:</span>
+          {searchHistory.slice(0, 5).map((entry, i) => (
+            <button
+              key={i}
+              className="history-chip"
+              onClick={() => handleHistoryClick(entry)}
+              disabled={isLoading}
+            >
+              {entry.topic}
+            </button>
+          ))}
+        </div>
+      )}
 
       {statusMessage && (
         <div className="status-bar">
