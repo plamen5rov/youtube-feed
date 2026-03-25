@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import DatePicker from './DatePicker'
 
 function SearchPanel({ onSearch, isLoading, statusMessage }) {
   const today = new Date()
@@ -35,26 +36,18 @@ function SearchPanel({ onSearch, isLoading, statusMessage }) {
         </div>
 
         <div className="date-filters">
-          <div className="date-group">
-            <label className="date-label">From</label>
-            <input
-              type="date"
-              className="date-input"
-              value={fromDate}
-              onChange={(e) => setFromDate(e.target.value)}
-              disabled={isLoading}
-            />
-          </div>
-          <div className="date-group">
-            <label className="date-label">To</label>
-            <input
-              type="date"
-              className="date-input"
-              value={toDate}
-              onChange={(e) => setToDate(e.target.value)}
-              disabled={isLoading}
-            />
-          </div>
+          <DatePicker
+            label="From"
+            value={fromDate}
+            onChange={setFromDate}
+            disabled={isLoading}
+          />
+          <DatePicker
+            label="To"
+            value={toDate}
+            onChange={setToDate}
+            disabled={isLoading}
+          />
           <div className="date-group" style={{ flex: '0 0 auto', alignSelf: 'flex-end' }}>
             <button 
               type="submit" 

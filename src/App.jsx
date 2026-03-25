@@ -136,6 +136,8 @@ function AppContent() {
         const data = await response.json()
         if (!data.items?.length) break
 
+        console.log(`Search page: got ${data.items.length} results, pageToken: ${data.nextPageToken ? 'yes' : 'no'}`)
+
         const filtered = isSubscriptionsOnly
           ? data.items.filter(item =>
               item.snippet?.channelId && subscriptions.has(item.snippet.channelId)
@@ -151,6 +153,8 @@ function AppContent() {
         setStatusMessage(`Found ${allResults.length} videos...`)
       }
 
+      console.log(`Search complete: ${allResults.length} results, fetching details...`)
+
       if (allResults.length === 0) {
         const label = isSubscriptionsOnly ? 'from your subscriptions' : 'matching your search'
         setStatusMessage(`No videos found for "${topic}" ${label}`)
@@ -159,6 +163,7 @@ function AppContent() {
       }
 
       const detailedItems = await getVideoDetails(allResults.map(i => i.id.videoId))
+      console.log(`Video details: got ${detailedItems.length} items from ${allResults.length} search results`)
 
       const results = detailedItems.map(item => ({
         id: item.id,
@@ -183,20 +188,32 @@ function AppContent() {
   }
 
   const getVideoDetails = async (videoIds) => {
-    try {
-      const url = new URL(`${API_BASE}/videos`)
-      url.searchParams.set('part', 'snippet,contentDetails')
-      url.searchParams.set('id', videoIds.join(','))
+    if (!videoIds.length) return []
 
-      const response = await fetch(url, { headers: { Authorization: `Bearer ${accessToken}` } })
-      if (!response.ok) return []
+    const BATCH_SIZE = 50
+    const allItems = []
 
-      const data = await response.json()
-      return data.items || []
-    } catch (error) {
-      console.error('Error fetching video details:', error)
-      return []
+    for (let i = 0; i < videoIds.length; i += BATCH_SIZE) {
+      const batch = videoIds.slice(i, i + BATCH_SIZE)
+      try {
+        const url = new URL(`${API_BASE}/videos`)
+        url.searchParams.set('part', 'snippet,contentDetails')
+        url.searchParams.set('id', batch.join(','))
+
+        const response = await fetch(url, { headers: { Authorization: `Bearer ${accessToken}` } })
+        if (!response.ok) {
+          console.error('Video details API error:', response.status)
+          continue
+        }
+
+        const data = await response.json()
+        if (data.items) allItems.push(...data.items)
+      } catch (error) {
+        console.error('Error fetching video details batch:', error)
+      }
     }
+
+    return allItems
   }
 
   const handleCopyMarkdown = () => {
