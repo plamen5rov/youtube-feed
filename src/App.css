@@ -289,6 +289,44 @@ body {
   }
 }
 
+/* Scope Toggle */
+.scope-toggle {
+  display: flex;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.scope-btn {
+  flex: 1;
+  padding: 10px 16px;
+  background: var(--bg-primary);
+  border: 2px solid var(--border-dim);
+  border-radius: 10px;
+  color: var(--text-secondary);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.scope-btn:hover {
+  color: var(--text-primary);
+  border-color: var(--accent);
+}
+
+.scope-btn.active {
+  background: var(--accent);
+  color: #ffffff;
+  border-color: var(--accent);
+  box-shadow: 0 0 12px rgba(255, 0, 0, 0.3);
+}
+
+.scope-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 /* Status Bar */
 .status-bar {
   display: flex;

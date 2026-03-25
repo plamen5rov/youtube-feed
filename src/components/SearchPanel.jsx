@@ -8,11 +8,12 @@ function SearchPanel({ onSearch, isLoading, statusMessage }) {
   const [topic, setTopic] = useState('')
   const [fromDate, setFromDate] = useState(defaultFrom.toISOString().split('T')[0])
   const [toDate, setToDate] = useState(today.toISOString().split('T')[0])
+  const [scope, setScope] = useState('all')
 
   const handleSubmit = (e) => {
     e.preventDefault()
     if (topic.trim() && !isLoading) {
-      onSearch({ topic, fromDate, toDate })
+      onSearch({ topic, fromDate, toDate, scope })
     }
   }
 
@@ -70,6 +71,25 @@ function SearchPanel({ onSearch, isLoading, statusMessage }) {
               )}
             </button>
           </div>
+        </div>
+
+        <div className="scope-toggle">
+          <button
+            type="button"
+            className={`scope-btn${scope === 'all' ? ' active' : ''}`}
+            onClick={() => setScope('all')}
+            disabled={isLoading}
+          >
+            All YouTube
+          </button>
+          <button
+            type="button"
+            className={`scope-btn${scope === 'subscriptions' ? ' active' : ''}`}
+            onClick={() => setScope('subscriptions')}
+            disabled={isLoading}
+          >
+            My Subscriptions
+          </button>
         </div>
       </form>
 

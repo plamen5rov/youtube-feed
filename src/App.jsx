@@ -99,7 +99,7 @@ function AppContent() {
     sessionStorage.removeItem('yt_access_token')
   }
 
-  const handleSearch = async ({ topic, fromDate, toDate }) => {
+  const handleSearch = async ({ topic, fromDate, toDate, scope }) => {
     if (!topic.trim()) return
 
     sessionStorage.setItem('lastTopic', topic)
@@ -115,6 +115,7 @@ function AppContent() {
 
     const from = fromDate ? new Date(fromDate) : new Date('2025-01-01')
     const to = toDate ? new Date(toDate + 'T23:59:59') : new Date()
+    const isSubscriptionsOnly = scope === 'subscriptions'
 
     try {
       while (totalFetched < maxTotal) {
@@ -135,9 +136,11 @@ function AppContent() {
         const data = await response.json()
         if (!data.items?.length) break
 
-        const filtered = data.items.filter(item => 
-          item.snippet?.channelId && subscriptions.has(item.snippet.channelId)
-        )
+        const filtered = isSubscriptionsOnly
+          ? data.items.filter(item =>
+              item.snippet?.channelId && subscriptions.has(item.snippet.channelId)
+            )
+          : data.items
 
         allResults = allResults.concat(filtered)
         totalFetched += data.items.length
@@ -149,13 +152,14 @@ function AppContent() {
       }
 
       if (allResults.length === 0) {
-        setStatusMessage(`No videos found for "${topic}" from your subscriptions`)
+        const label = isSubscriptionsOnly ? 'from your subscriptions' : 'matching your search'
+        setStatusMessage(`No videos found for "${topic}" ${label}`)
         setIsLoading(false)
         return
       }
 
       const detailedItems = await getVideoDetails(allResults.map(i => i.id.videoId))
-      
+
       const results = detailedItems.map(item => ({
         id: item.id,
         title: item.snippet.title,
@@ -168,7 +172,8 @@ function AppContent() {
       }))
 
       setVideoResults(results)
-      setStatusMessage(`Found ${results.length} videos from your subscriptions`)
+      const label = isSubscriptionsOnly ? 'from your subscriptions' : 'from YouTube'
+      setStatusMessage(`Found ${results.length} videos ${label}`)
     } catch (error) {
       console.error('Search error:', error)
       setStatusMessage('Error searching videos')
